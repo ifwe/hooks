@@ -58,11 +58,11 @@ function run_hooks
     for hook in `list_hooks_in_dir "${dir}"`
     do
         export last_run_hook="${hook} $@"
-        if [ ! -z ${GIT_HOOKS_VERBOSE} ] ; then
-            echo -n "@@ Running hook: "
-            echo -n `basename \`dirname "${hook}"\``
-            echo "/`basename "${hook}"`"
-        fi
+        #if [ ! -z ${GIT_HOOKS_VERBOSE} ] ; then
+        echo -n "@@ Running hook: "
+        echo -n `basename \`dirname "${hook}"\``
+        echo "/`basename "${hook}"`"
+        #fi
         ${hook} "$@"
     done
 }
