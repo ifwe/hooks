@@ -33,13 +33,12 @@ function hook_dirs
     else
         hook=""
     fi
-    echo "${PWD}/all${hook}"
-    #echo "${HOME}/.git_hooks${hook}"
-    #GITDIR=`git rev-parse --git-dir`
-    #cd $GITDIR/..
-    #echo "${PWD}/git_hooks${hook}"
-    #echo "${PWD}/.githooks${hook}"
-    #eval echo "`git config hooks.global`"${hook}
+
+    GITDIR=`git rev-parse --git-dir`
+    export GIT_HOOKS_DIR="${GITDIR}/hooks"
+
+    # run hooks like "all/post-receive" in this repository
+    echo "${GITDIR}/hooks/all${hook}"
 }
 
 function list_hooks_in_dir
@@ -77,7 +76,6 @@ function run_hook
     fi
     shift 1
     for dir in `hook_dirs "${hook}"`; do
-        echo "dir: $dir"
         if [ ! -d "${dir}" ] ; then
             continue
         fi
