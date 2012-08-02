@@ -81,6 +81,7 @@ function run_hook
     set -e
 
     NEW_SHA="${3}";
+    echo "new sha is $NEW_SHA";
 
     hook=`basename "${1}"`
     if [ -z ${hook} ] ; then
