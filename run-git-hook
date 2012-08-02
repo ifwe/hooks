@@ -26,7 +26,8 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-UNPACK_TMP=/tmp/githooks-tmp-unpacked
+UNPACK_TMP=`mktemp -dt githooks`;
+STDIN_TMP=`mktemp -t githooks`;
 
 function hook_dirs
 {
@@ -42,11 +43,21 @@ function hook_dirs
     # run hooks like "all/post-receive" in this global hooks repository
     echo "${GITDIR}/hooks/all${hook}"
 
-    # Unpack the current repository's /git_hooks directory into UNPACK_TMP so
-    # that we can run any hooks there.
-    rm -rf $UNPACK_TMP && mkdir $UNPACK_TMP
-    git archive --format=tar HEAD git_hooks | tar -x -C $UNPACK_TMP
-    echo "${UNPACK_TMP}/git_hooks${hook}"
+    latest_rev="HEAD"
+
+    # If hook is 'pre-receive', we don't want to unpack HEAD, but instead the
+    # last revision from the push.
+    if [ "${1}" = "pre-receive" ] ; then
+        while read oldrev newrev refname
+        do
+            if [ ! -z $newrev ]; then
+                latest_rev=$newrev;
+            fi
+        done < "$STDIN_TMP"
+    fi
+    echo "using hooks from: $latest_rev" >&2
+    git archive --format=tar $latest_rev git_hooks | tar -x -C "$UNPACK_TMP"
+    echo "$UNPACK_TMP/git_hooks${hook}"
 }
 
 function list_hooks_in_dir
@@ -62,6 +73,7 @@ function run_hooks
         return 1
     fi
     shift 1
+
     for hook in `list_hooks_in_dir "${dir}"`
     do
         export last_run_hook="${hook} $@"
@@ -70,13 +82,19 @@ function run_hooks
         echo -n `basename \`dirname "${hook}"\``
         echo "/`basename "${hook}"`"
         #fi
-        ${hook} "$@"
+        ${hook} "$@" < $STDIN_TMP
     done
 }
 
 function run_hook
 {
     set -e
+
+    # Write our stdin to a file - we want to run it through each hook.
+    while read line
+    do
+        echo "$line" > $STDIN_TMP
+    done
 
     NEW_SHA="${3}";
 
@@ -105,3 +123,10 @@ if [ ! -z "${GIT_DIR}" ] ; then
 fi
 trap report_error ERR
 run_hook "$@"
+
+if [ -f STDIN_TMP ] ; then
+    rm $STDIN_TMP
+fi
+if [ -d UNPACK_TMP ] ; then
+    rm -rf $UNPACK_TMP
+fi
