@@ -42,11 +42,15 @@ function hook_dirs
     # run hooks like "all/post-receive" in this global hooks repository
     echo "${GITDIR}/hooks/all${hook}"
 
-    # Unpack the current repository's /git_hooks directory into UNPACK_TMP so
-    # that we can run any hooks there.
-    rm -rf $UNPACK_TMP && mkdir $UNPACK_TMP
-    git archive HEAD git_hooks | tar -x -C $UNPACK_TMP 2> /dev/null
-    echo "${UNPACK_TMP}/git_hooks${hook}"
+    if [ ! -z "${2}" ] ; then
+        newsha="${2}"
+
+        # Unpack the current repository's /git_hooks directory into UNPACK_TMP so
+        # that we can run any hooks there.
+        rm -rf $UNPACK_TMP && mkdir $UNPACK_TMP
+        git archive $newsha git_hooks | tar -x -C $UNPACK_TMP 2> /dev/null
+        echo "${UNPACK_TMP}/git_hooks${hook}"
+    fi
 }
 
 function list_hooks_in_dir
@@ -83,7 +87,7 @@ function run_hook
         return 1
     fi
     shift 1
-    for dir in `hook_dirs "${hook}"`; do
+    for dir in `hook_dirs "${hook} ${3}"`; do
         if [ ! -d "${dir}" ] ; then
             continue
         fi
