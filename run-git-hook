@@ -39,14 +39,13 @@ function hook_dirs
     GITDIR=`git rev-parse --git-dir`
     export GIT_HOOKS_DIR="${GITDIR}/hooks"
 
-    rm -rf $UNPACK_TMP
-    git archive HEAD | tar -x -C $UNPACK_TMP
-
     # run hooks like "all/post-receive" in this global hooks repository
     echo "${GITDIR}/hooks/all${hook}"
 
-    # UNPACK_TMP contains a snapshot of the project's HEAD. look in
-    # project/git_hooks for extra hooks.
+    # Unpack the current repository's /git_hooks directory into UNPACK_TMP so
+    # that we can run any hooks there.
+    rm -rf $UNPACK_TMP && mkdir $UNPACK_TMP
+    git archive HEAD git_hooks | tar -x -C $UNPACK_TMP 2> /dev/null
     echo "${UNPACK_TMP}/git_hooks${hook}"
 }
 
