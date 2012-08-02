@@ -26,6 +26,8 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+UNPACK_TMP=/tmp/githooks-tmp-unpacked
+
 function hook_dirs
 {
     if [ ! -z "${1}" ] ; then
@@ -37,9 +39,15 @@ function hook_dirs
     GITDIR=`git rev-parse --git-dir`
     export GIT_HOOKS_DIR="${GITDIR}/hooks"
 
-    # run hooks like "all/post-receive" in this repository
+    rm -rf $UNPACK_TMP
+    git archive HEAD | tar -x -C $UNPACK_TMP
+
+    # run hooks like "all/post-receive" in this global hooks repository
     echo "${GITDIR}/hooks/all${hook}"
-    echo "${GITDIR}/../git_hooks${hook}"
+
+    # UNPACK_TMP contains a snapshot of the project's HEAD. look in
+    # project/git_hooks for extra hooks.
+    echo "${UNPACK_TMP}/git_hooks${hook}"
 }
 
 function list_hooks_in_dir
