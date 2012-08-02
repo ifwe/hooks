@@ -26,8 +26,8 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-UNPACK_TMP=`mktemp -dt githooks`;
-STDIN_TMP=`mktemp -t githooks`;
+UNPACK_TMP=`mktemp -dt githooks.XXXXXX`;
+STDIN_TMP=`mktemp -t githooks.XXXXXX`;
 
 function hook_dirs
 {
