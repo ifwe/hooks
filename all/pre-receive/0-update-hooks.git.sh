@@ -5,9 +5,9 @@
 #
 
 GIT_HOOKS_DIR=`git rev-parse --git-dir`/hooks
-echo -n "Updating hooks in $GIT_HOOKS_DIR..."
+echo "Updating hooks in $GIT_HOOKS_DIR..."
 pushd $GIT_HOOKS_DIR
 git fetch origin
-#git reset --hard origin/master
+git reset --hard origin/master
 popd
 echo "done"
