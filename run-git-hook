@@ -48,7 +48,7 @@ function hook_dirs
         rm -rf $UNPACK_TMP && mkdir $UNPACK_TMP
         echo "git archive from directory: " >&2;
         echo `pwd` >&2;
-        git archive $NEW_SHA git_hooks | tar -x -C $UNPACK_TMP 2> /tmp/wut
+        git archive $NEW_SHA git_hooks | tar -x -C $UNPACK_TMP 2> /dev/null
         echo "${UNPACK_TMP}/git_hooks${hook}"
     fi
 }
