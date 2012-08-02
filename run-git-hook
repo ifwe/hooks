@@ -46,7 +46,7 @@ function hook_dirs
     # that we can run any hooks there.
     rm -rf $UNPACK_TMP && mkdir $UNPACK_TMP
     git archive HEAD git_hooks | tar -x -C $UNPACK_TMP 2> /dev/null
-    #echo "${UNPACK_TMP}/git_hooks${hook}"
+    echo "${UNPACK_TMP}/git_hooks${hook}"
 }
 
 function list_hooks_in_dir
