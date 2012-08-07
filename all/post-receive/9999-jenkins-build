@@ -6,7 +6,7 @@ from jenkins_builder import Jenkins
 
 
 def main(stdin, config, *args):
-    for jobname in config.get('hooks.jenkins-jobs').split(','):
+    for jobname in config.get('hooks.jenkins-jobs', '').split(','):
         jobname = jobname.strip()
         Jenkins(jobname).build()
 
