@@ -12,7 +12,7 @@ def main(stdin, config, *args):
 
 if __name__ == '__main__':
     config = {}
-    for line in subprocess.Popen(['git', 'config', '--list']).communicate()[0].splitlines():
+    for line in subprocess.Popen(['git', 'config', '--list'], stdout=subprocess.PIPE).communicate()[0].splitlines():
         k, v = line.split('=', 1)
         config[k] = v
     main(sys.stdin, config, *sys.argv[1:])
