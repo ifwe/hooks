@@ -41,7 +41,8 @@ def run(*args, **kwds):
     if expect_return_code is not None and proc.returncode != expect_return_code:
         raise subprocess.CalledProcessError(proc.returncode, args, output = proc.stderr)
 
-    _stdout(proc.stdout, end = '', file = sys.stdout)
-    _stdout(proc.stderr, end = '', file = sys.stderr)
+    if kwds.get('verbose'):
+        _stdout(proc.stdout, end = '', file = sys.stdout)
+        _stdout(proc.stderr, end = '', file = sys.stderr)
 
     return proc
