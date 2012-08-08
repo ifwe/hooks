@@ -28,7 +28,6 @@
 
 UNPACK_TMP=`mktemp -dt githooks.XXXXXX`;
 STDIN_TMP=`mktemp -t githooks.XXXXXX`;
-TAR_TMP=`mktemp -t githooks-tar.XXXXXX`
 
 function hook_dirs
 {
@@ -56,13 +55,10 @@ function hook_dirs
             fi
         done < "$STDIN_TMP"
     fi
-
     echo "using hooks from: $latest_rev" >&2
-    if git archive --format=tar $latest_rev git_hooks > $TAR_TMP then
-        if tar -xf "$TAR_TMP" -C "$UNPACK_TMP" then
-            echo "$UNPACK_TMP/git_hooks${hook}"
-        fi
-        rm "$TAR_TMP"
+    git archive --format=tar $latest_rev git_hooks | tar -x -C "$UNPACK_TMP"
+    if [ -d "$UNPACK_TMP/git_hooks${hook}" ] ; then
+        echo "$UNPACK_TMP/git_hooks${hook}"
     fi
 }
 
