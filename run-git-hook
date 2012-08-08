@@ -43,7 +43,7 @@ function hook_dirs
     # run hooks like "all/post-receive" in this global hooks repository
     echo "${GITDIR}/hooks/all${hook}"
 
-    latest_rev="HEAD"
+    latest_rev="refs/heads/master"
 
     # If hook is 'pre-receive', we don't want to unpack HEAD, but instead the
     # last revision from the push.
@@ -57,7 +57,9 @@ function hook_dirs
     fi
     echo "using hooks from: $latest_rev" >&2
     git archive --format=tar $latest_rev git_hooks | tar -x -C "$UNPACK_TMP"
-    echo "$UNPACK_TMP/git_hooks${hook}"
+    if [ -d "$UNPACK_TMP/git_hooks${hook}" ] ; then
+        echo "$UNPACK_TMP/git_hooks${hook}"
+    fi
 }
 
 function list_hooks_in_dir
