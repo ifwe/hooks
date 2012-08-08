@@ -1,2 +1,5 @@
-#!/bin/bash
-$GIT_DIR/hooks/run-git-hook "$0" "$@"
+#!/bin/bash -e
+if [ ! -z $GIT_DIR ]; then
+    $GIT_DIR/hooks/run-git-hook "$0" "$@"
+fi
+exit 0
