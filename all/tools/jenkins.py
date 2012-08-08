@@ -1,6 +1,7 @@
 import urllib
 import urllib2
 import urlparse
+import traceback
 
 
 class Jenkins(object):
@@ -22,6 +23,7 @@ class Jenkins(object):
         self.jobname = jobname
 
     def build(self):
+        print "Starting jenkins build: %r" % (self.jobname,),
         url = urlparse.urlunparse((
             'http',
             '%s:%s' % (self.host, self.port),
@@ -30,7 +32,19 @@ class Jenkins(object):
             urllib.urlencode(self.params),
             None
         ))
-        self.request(url)
+        print getattr(self.request(url), 'msg', 'Failed')
 
     def request(self, url):
-        urllib2.urlopen(url)
+        try:
+            return urllib2.urlopen(url)
+        except Exception:
+            traceback.print_exc()
+
+
+def build_jobs(jobs_str=None):
+    if jobs_str is None:
+        return
+
+    jobs = [Jenkins(x.strip()) for x in jobs_str.split(',') if x.strip()]
+    for job in jobs:
+        job.build()
