@@ -634,8 +634,8 @@ show_new_revisions()
 			#eval $(printf "$custom_showrev" $onerev)
 git show -C --pretty=format:"committer: %cn%ncomments: %N%n%s%n%b" $onerev > gitlog.txt
 export PYTHONPATH='/usr/local/lib/python2.4/site-packages'
-pygmentize -O noclasses=True -f html -l diff gitlog.txt
-pygmentize -O noclasses=True -f html -l diff -o gitlogemail.html gitlog.txt
+pygmentize -O encoding=utf-8 -O noclasses=True -f html -l diff gitlog.txt
+pygmentize -O encoding=utf-8 -O noclasses=True -f html -l diff -o gitlogemail.html gitlog.txt
 		done
 	fi
 }
