@@ -50,6 +50,9 @@ function hook_dirs
     if [[ "${1}" == "pre-receive" || "${1}" == "post-receive" ]] ; then
         while read oldrev newrev refname
         do
+            if expr "$newrev" : '0*$' >/dev/null; then
+                continue
+            fi
             if [ ! -z $newrev ]; then
                 latest_rev=$newrev;
             fi
