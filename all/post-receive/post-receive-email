@@ -209,22 +209,17 @@ generate_email_header()
 	X-Git-Oldrev: $oldrev
 	X-Git-Newrev: $newrev
 
-	<h1>Project "$projectdesc" received a push.</h1>
+	<h2>$projectdesc received a push.</h2>
 
-	<h2>$refname_type: $short_refname ${change_type}d</h2>
+	<h3>$refname_type: $short_refname ${change_type}d</h3>
 <pre>
 	EOF
 }
 
 generate_email_footer()
 {
-	SPACE=" "
 	cat <<-EOF
 </pre>
-	<p>this email was generated because of /git/your-repo.git/hooks/post-receive by the file /git-core/contrib/hooks/post-receive-email<br />
-For more info, see <a href="http://blog.chomperstomp.com/?p=630">http://blog.chomperstomp.com/?p=630</a>
-	--${SPACE}<br />
-	$projectdesc</p>
 	EOF
 }
 
@@ -249,6 +244,32 @@ generate_create_branch_email()
 #
 generate_update_branch_email()
 {
+	# The diffstat is shown from the old revision to the new revision.
+	# This is to show the truth of what happened in this change.
+	# There's no point showing the stat from the base to the new
+	# revision because the base is effectively a random revision at this
+	# point - the user will be interested in what this revision changed
+	# - including the undoing of previous revisions in the case of
+	# non-fast-forward updates.
+	echo ""
+	echo "Summary of changes:"
+	git diff-tree --stat --summary --find-copies-harder $oldrev..$newrev
+
+	echo ""
+	if [ -z "$rewind_only" ]; then
+		echo ""
+		echo $LOGBEGIN
+		show_new_revisions
+
+		# XXX: Need a way of detecting whether git rev-list actually
+		# outputted anything, so that we can issue a "no new
+		# revisions added by this update" message
+
+		echo $LOGEND
+	else
+		echo "No new revisions were added by this update."
+	fi
+
 	# Consider this:
 	#   1 --- 2 --- O --- X --- 3 --- 4 --- N
 	#
@@ -392,31 +413,6 @@ generate_update_branch_email()
 		fi
 	fi
 
-	echo ""
-	if [ -z "$rewind_only" ]; then
-		echo ""
-		echo $LOGBEGIN
-		show_new_revisions
-
-		# XXX: Need a way of detecting whether git rev-list actually
-		# outputted anything, so that we can issue a "no new
-		# revisions added by this update" message
-
-		echo $LOGEND
-	else
-		echo "No new revisions were added by this update."
-	fi
-
-	# The diffstat is shown from the old revision to the new revision.
-	# This is to show the truth of what happened in this change.
-	# There's no point showing the stat from the base to the new
-	# revision because the base is effectively a random revision at this
-	# point - the user will be interested in what this revision changed
-	# - including the undoing of previous revisions in the case of
-	# non-fast-forward updates.
-	echo ""
-	echo "Summary of changes:"
-	git diff-tree --stat --summary --find-copies-harder $oldrev..$newrev
 }
 
 #
@@ -632,9 +628,9 @@ show_new_revisions()
 		while read onerev
 		do
 			#eval $(printf "$custom_showrev" $onerev)
-git show -C --pretty=format:"committer: %cn%ncomments: %N%n%s%n%b" $onerev > gitlog.txt
+git show -C --pretty=format:"Author: %cn%n%N%n%s%n%b" $onerev > gitlog.txt
 export PYTHONPATH='/usr/local/lib/python2.4/site-packages'
-pygmentize -O encoding=utf-8 -O noclasses=True -f html -l diff gitlog.txt
+pygmentize -O encoding=utf-8 -O noclasses=True -f html -l diff gitlog.txt | sed 's/line-height: 125%/line-height: 147%; font-family: Monaco, Consolas, Courier New; font-size: 12px;/'
 pygmentize -O encoding=utf-8 -O noclasses=True -f html -l diff -o gitlogemail.html gitlog.txt
 		done
 	fi
@@ -653,8 +649,8 @@ send_mail()
 # ---------------------------- main()
 
 # --- Constants
-LOGBEGIN="</pre>= COMMIT LOG ==========================================================="
-LOGEND="========================================================================<pre>"
+LOGBEGIN=""
+LOGEND=""
 
 # --- Config
 # Set GIT_DIR either from the working directory, or from the environment
