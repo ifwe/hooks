@@ -646,7 +646,7 @@ send_mail()
 	if [ -n "$envelopesender" ]; then
 		/usr/sbin/sendmail -t -f "$envelopesender"
 	else
-		/usr/sbin/sendmail -t
+		/usr/sbin/sendmail -t -f "devtools@tagged.com"
 	fi
 }
 
