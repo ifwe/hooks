@@ -59,10 +59,10 @@ function hook_dirs
         done < "$STDIN_TMP"
     fi
     echo "using hooks from: $latest_rev" >&2
-    if [[ `git ls-tree -d --name-only $latest_rev` =~ git_hooks ]] ; then
-        git archive --format=tar $latest_rev git_hooks | tar -x -C "$UNPACK_TMP"
-        if [ -d "$UNPACK_TMP/git_hooks${hook}" ] ; then
-            echo "$UNPACK_TMP/git_hooks${hook}"
+    if [[ `git ls-tree -d --name-only $latest_rev` =~ .git_hooks ]] ; then
+        git archive --format=tar $latest_rev .git_hooks | tar -x -C "$UNPACK_TMP"
+        if [ -d "$UNPACK_TMP/.git_hooks${hook}" ] ; then
+            echo "$UNPACK_TMP/.git_hooks${hook}"
         fi
     fi
 }
