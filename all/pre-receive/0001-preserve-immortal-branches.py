@@ -1,4 +1,16 @@
 #!/usr/bin/env python
+'''
+A git pre-receive hook to deny deletion of any branch deemed immortal by
+'hooks.immortal-branches'.
+
+Configure as follows (in a bare repository):
+    git config hooks.immortal-branches "master, very-important-branch"
+
+If a branch is deleted and its name matches one of the values in this list,
+the receive will be denied with an appropriate message to the pusher.
+'''
+
+
 import sys
 import os.path
 
