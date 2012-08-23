@@ -82,6 +82,7 @@ function run_hooks
     fi
     shift 1
 
+    export PYTHONPATH="${GITDIR}/hooks:${PYTHONPATH}"
     for hook in `list_hooks_in_dir "${dir}"`
     do
         export last_run_hook="${hook} $@"
@@ -90,7 +91,7 @@ function run_hooks
         echo -n `basename \`dirname "${hook}"\``
         echo "/`basename "${hook}"`"
         #fi
-        PYTHONPATH="${GITDIR}/hooks:${PYTHONPATH}" ${hook} "$@" < $STDIN_TMP
+        ${hook} "$@" < $STDIN_TMP
     done
 }
 
