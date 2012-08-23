@@ -37,7 +37,7 @@ function hook_dirs
         hook=""
     fi
 
-    GITDIR=`git rev-parse --git-dir`
+    export GITDIR=`git rev-parse --git-dir`
     export GIT_HOOKS_DIR="${GITDIR}/hooks"
 
     # run hooks like "all/post-receive" in this global hooks repository
@@ -89,7 +89,7 @@ function run_hooks
         echo -n `basename \`dirname "${hook}"\``
         echo "/`basename "${hook}"`"
         #fi
-        ${hook} "$@" < $STDIN_TMP
+        PYTHONPATH="${GITDIR}/hooks:${PYTHONPATH}" ${hook} "$@" < $STDIN_TMP
     done
 }
 
