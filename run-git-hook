@@ -30,6 +30,9 @@ UNPACK_TMP=`mktemp -dt githooks.XXXXXX`;
 STDIN_TMP=`mktemp -t githooks.XXXXXX`;
 GIT_HOOKS='.git_hooks'
 
+export GITDIR=`git rev-parse --git-dir`
+export GIT_HOOKS_DIR="${GITDIR}/hooks"
+
 function hook_dirs
 {
     if [ ! -z "${1}" ] ; then
@@ -37,9 +40,6 @@ function hook_dirs
     else
         hook=""
     fi
-
-    export GITDIR=`git rev-parse --git-dir`
-    export GIT_HOOKS_DIR="${GITDIR}/hooks"
 
     # run hooks like "all/post-receive" in this global hooks repository
     echo "${GITDIR}/hooks/all${hook}"
@@ -82,7 +82,7 @@ function run_hooks
     fi
     shift 1
 
-    export PYTHONPATH="${GITDIR}/hooks:${PYTHONPATH}"
+    export PYTHONPATH="${GIT_HOOKS_DIR}:${PYTHONPATH}"
     for hook in `list_hooks_in_dir "${dir}"`
     do
         export last_run_hook="${hook} $@"
