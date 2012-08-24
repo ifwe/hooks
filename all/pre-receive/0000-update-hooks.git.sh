@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 #
 # Make server repositories receiving pushes first update their hooks directory.
