@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# Read variables passed on by GIT
+read OLDREV NEWREV REFNAME
+
+# Find out basic variables
+GIT_EXEC=`which git`
+REPO=`basename $PWD`
+HIPCHAT_SCRIPT="hipchat-cli"
+HIPCHAT_COLOR="yellow"
+HIPCHAT_TOKEN="3bf59104d53d4313ea8866c5127ec6"
+HIPCHAT_ROOM=$(git config hooks.hipchat-roomid)
+HIPCHAT_FROM="Git"
+
+if [[ -z $HIPCHAT_ROOM ]]; then
+    exit
+fi
+
+# User is commiter of either last or first commit
+NULLREV="0000000000000000000000000000000000000000"
+[ "$NEWREV" == "$NULLREV" ] && USER_REV="$OLDREV" || USER_REV="$NEWREV"
+USER=`$GIT_EXEC log -1 $USER_REV --format="%an"`
+BRANCH=${REFNAME#refs/heads/}
+
+# Setup gitweb links
+if [ -n "$GITWEB" ]
+then
+  USER_LINK="<a href=\"http://$GITWEB/?p=$REPO;a=search;s=$USER;st=author\">$USER</a>"
+  BRANCH_LINK="<a href=\"http://$GITWEB/?p=$REPO;a=shortlog;h=$REFNAME\">$BRANCH</a>"
+  REPO_LINK="<a href=\"http://$GITWEB/?p=$REPO;a=summary\">$REPO</a>"
+elif [ -n "$CGIT" ]
+then
+  USER_LINK=$USER
+  BRANCH_LINK="<a href=\"http://$CGIT/$REPO/log/?h=$REFNAME\">$BRANCH</a>"
+  REPO_LINK="<a href=\"http://$CGIT/$REPO/\">$REPO</a>"
+else
+  USER_LINK=$USER
+  BRANCH_LINK=$BRANCH
+  REPO_LINK=$REPO
+fi
+
+# Construct message
+if [ "$OLDREV" == "$NULLREV" ]
+then
+  MSG="$USER_LINK created branch $BRANCH_LINK of $REPO_LINK"
+  HIPCHAT_COLOR="green"
+elif [ "$NEWREV" == "$NULLREV" ]
+then
+  MSG="$USER_LINK deleted branch $BRANCH of $REPO_LINK"
+  HIPCHAT_COLOR="red"
+else
+  TITLE="$USER_LINK pushed to branch $BRANCH_LINK of $REPO_LINK"
+  if [ -n "$GITWEB" ]
+  then
+    LOG=`$GIT_EXEC log $OLDREV..$NEWREV --format="- %s (<a href=\"http://$GITWEB/?p=$REPO;a=commitdiff;h=%H\">%h</a>)"`
+  elif [ -n "$CGIT" ]
+  then
+    LOG=`$GIT_EXEC log $OLDREV..$NEWREV --format="- %s (<a href=\"http://$CGIT/$REPO/commit/?id=%H\">%h</a>)"`
+  else
+    LOG=`$GIT_EXEC log $OLDREV..$NEWREV --format="- %s (%h)"`
+  fi
+  if [ -n "$REDMINE" ]
+  then
+    LOG=`echo -e "$LOG" | sed "s/#\([0-9]*\)/#<a href=\"http:\/\/$REDMINE\/issues\/\1\">\1<\/a>/g"`
+  elif [ -n "$JIRA" ]
+  then
+    LOG=`echo -e "$LOG" | sed "s/\([A-Z]\{2,\}\-[0-9]\{1,\}\)/<a href=\"http:\/\/$JIRA\/browse\/\1\">\1<\/a>/g"`
+  fi
+  MSG="$TITLE\n$LOG"
+fi
+
+# Send it to HipChat
+echo -e "$MSG" | $HIPCHAT_SCRIPT -c "$HIPCHAT_COLOR" -t "$HIPCHAT_TOKEN" -r "$HIPCHAT_ROOM" -f "$HIPCHAT_FROM" > /dev/null
