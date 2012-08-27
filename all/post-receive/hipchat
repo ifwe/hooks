@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Read variables passed on by GIT
 read OLDREV NEWREV REFNAME
@@ -6,13 +6,14 @@ read OLDREV NEWREV REFNAME
 # Find out basic variables
 GIT_EXEC=`which git`
 REPO=`basename $PWD`
-HIPCHAT_SCRIPT="hipchat-cli"
+HIPCHAT_SCRIPT=`dirname $0`"/../../tools/hipchat-cli"
 HIPCHAT_COLOR="yellow"
 HIPCHAT_TOKEN="3bf59104d53d4313ea8866c5127ec6"
 HIPCHAT_ROOM=$(git config hooks.hipchat-roomid)
 HIPCHAT_FROM="Git"
 
 if [[ -z $HIPCHAT_ROOM ]]; then
+    echo "No hipchat room specified in 'git config hooks.hipchat-roomid'"
     exit
 fi
 
@@ -70,4 +71,5 @@ else
 fi
 
 # Send it to HipChat
-echo -e "$MSG" | $HIPCHAT_SCRIPT -c "$HIPCHAT_COLOR" -t "$HIPCHAT_TOKEN" -r "$HIPCHAT_ROOM" -f "$HIPCHAT_FROM" > /dev/null
+echo -e "$MSG" | $HIPCHAT_SCRIPT -c "$HIPCHAT_COLOR" -t "$HIPCHAT_TOKEN" -r "$HIPCHAT_ROOM" -f "$HIPCHAT_FROM"
+#> /dev/null
