@@ -17,7 +17,7 @@
 # exit on failure
 set -e
 
-export http_proxy="http://10.15.11.60:80/"
+export https_proxy="https://10.15.11.60:443/"
 
 usage() {
   cat << EOF
