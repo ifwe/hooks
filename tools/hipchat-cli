@@ -17,6 +17,8 @@
 # exit on failure
 set -e
 
+export http_proxy="http://10.15.11.60:80/"
+
 usage() {
   cat << EOF
 Usage: $0 -t <token> -r <room id> -f <from name>
