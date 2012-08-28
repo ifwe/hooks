@@ -24,14 +24,16 @@ NULLREV="0000000000000000000000000000000000000000"
 USER=`$GIT_EXEC log -1 $USER_REV --format="%an"`
 BRANCH=${REFNAME#refs/heads/}
 
+## XXX: Disabled - it's just too many links!
 # Setup gitweb links
-if [ -n "$GITWEB" ]
-then
-  ## XXX: Disabled - it's just too many links!
-  # USER_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=search;s=$USER;st=author\">$USER</a>"
-  # BRANCH_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=shortlog;h=$REFNAME\">$BRANCH</a>"
-  # REPO_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=summary\">$REPO</a>"
-elif [ -n "$CGIT" ]
+# if [ -n "$GITWEB" ]
+# then
+#   USER_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=search;s=$USER;st=author\">$USER</a>"
+#   BRANCH_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=shortlog;h=$REFNAME\">$BRANCH</a>"
+#   REPO_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=summary\">$REPO</a>"
+# elif [ -n "$CGIT" ]
+
+if [ -n "$CGIT" ]
 then
   USER_LINK=$USER
   BRANCH_LINK="<a href=\"http://$CGIT/$REPO/log/?h=$REFNAME\">$BRANCH</a>"
