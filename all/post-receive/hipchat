@@ -27,9 +27,10 @@ BRANCH=${REFNAME#refs/heads/}
 # Setup gitweb links
 if [ -n "$GITWEB" ]
 then
-  USER_LINK="<a href=\"http://$GITWEB/?p=$REPO;a=search;s=$USER;st=author\">$USER</a>"
-  BRANCH_LINK="<a href=\"http://$GITWEB/?p=$REPO;a=shortlog;h=$REFNAME\">$BRANCH</a>"
-  REPO_LINK="<a href=\"http://$GITWEB/?p=$REPO;a=summary\">$REPO</a>"
+  ## XXX: Disabled - it's just too many links!
+  # USER_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=search;s=$USER;st=author\">$USER</a>"
+  # BRANCH_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=shortlog;h=$REFNAME\">$BRANCH</a>"
+  # REPO_LINK="<a href=\"https://$GITWEB/?p=$REPO;a=summary\">$REPO</a>"
 elif [ -n "$CGIT" ]
 then
   USER_LINK=$USER
@@ -54,7 +55,7 @@ else
   TITLE="$USER_LINK pushed to branch $BRANCH_LINK of $REPO_LINK"
   if [ -n "$GITWEB" ]
   then
-    LOG=`$GIT_EXEC log $OLDREV..$NEWREV --format="- %s (<a href=\"http://$GITWEB/?p=$REPO;a=commitdiff;h=%H\">%h</a>)"`
+    LOG=`$GIT_EXEC log $OLDREV..$NEWREV --format="- %s (<a href=\"https://$GITWEB/?p=$REPO;a=commitdiff;h=%H\">%h</a>)"`
   elif [ -n "$CGIT" ]
   then
     LOG=`$GIT_EXEC log $OLDREV..$NEWREV --format="- %s (<a href=\"http://$CGIT/$REPO/commit/?id=%H\">%h</a>)"`
