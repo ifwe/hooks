@@ -11,7 +11,7 @@ HIPCHAT_COLOR="purple"
 HIPCHAT_TOKEN="3bf59104d53d4313ea8866c5127ec6"
 HIPCHAT_ROOM=$(git config hooks.hipchat-roomid)
 HIPCHAT_FROM="Git"
-GITWEB="scm01.tagged.com/git"
+GITWEB="scm.tagged.com/git"
 
 if [[ -z $HIPCHAT_ROOM ]]; then
     echo "No hipchat room specified in 'git config hooks.hipchat-roomid'"
