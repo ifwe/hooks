@@ -1,5 +1,10 @@
 This repository provides version controlled hooks for all Tagged git repositories.
 
+By replacing your `.git/hooks` directory with this repository,
+you can then commit your pre/post-receive hooks and keep them version controlled.
+
+Simply place your hooks in a new `.git_hooks` directory in your repository and the hooks will glue everything together and run your hooks for you.
+
 # Installation Instructions
 ```
 cd /path/to/repo
